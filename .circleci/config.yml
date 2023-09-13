@@ -4,14 +4,14 @@ jobs:
   build:
     working_directory: ~/CircleCi
     docker:
-      - image: "circleci/python:3.6.4"
+      - image: "circleci/python"
     steps:
       - checkout
       - run: python3 main.py
   test:
     working_directory: ~/CircleCi
     docker:
-    - image: "circleci/python:3.6.4"
+    - image: "circleci/python"
     steps:
       - checkout
       - run: python3 main-test.py
