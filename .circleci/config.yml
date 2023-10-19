@@ -29,7 +29,7 @@ jobs:
           command: |
             pwd
             ls
-            docker build django_todo/Dockerfile -t django-todo-app
+            docker build django_todo/ -t django-todo-app
       - run:
           name: Push Docker image
           command: |
