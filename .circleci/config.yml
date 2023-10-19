@@ -1,25 +1,45 @@
 version: 2.1
 
-jobs:
-  build:
-    working_directory: ~/CircleCi
+executors:
+  docker-executor:
     docker:
-      - image: "circleci/python"
-    steps:
-      - checkout
-      - run: python3 main.py
+    - image: "circleci/python:3.10"
+
+jobs:
   test:
     working_directory: ~/CircleCi
-    docker:
-    - image: "circleci/python"
+    executor: docker-executor
     steps:
       - checkout
       - run: python3 main-test.py
+  build:
+    working_directory: ~/CircleCi
+    executor: docker-executor
+    steps:
+      - checkout
+      - run: python3 main.py
+  build_django_push:
+    working_directory: ~/CircleCi
+    executor: docker-executor
+    steps:
+      - checkout
+      - setup_remote_docker
+      - run:
+          name: Build Docker image
+          command: |
+            docker build ../django-todo-app/ -t django-todo-app
+      - run:
+          name: Push Docker image
+          command: |
+            echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
+            docker tag django-todo-app shameem2001/django-todo-app-ci:v1.0
+            docker push shameem2001/django-todo-app-ci:v1.0
 
 workflows:
-  build_and_test:
+  test_build_deploy:
     jobs:
       - build
       - test:
           requires:
             - build
+      - build_django_push
